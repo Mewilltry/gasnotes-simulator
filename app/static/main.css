@@ -616,6 +616,12 @@ input[role="switch"] {
     }
 }
 
+/* NIBP switch: the grey "off" pill is already mid-grey, so darken the
+   "on" state well past it for a readable on/off contrast */
+input[role="switch"].grey {
+    --background-on: color-mix(in srgb, var(--color-grey) 45%, black);
+}
+
 /* SIM-SLIDERS */
 sim-slider,
 .sim-select {
