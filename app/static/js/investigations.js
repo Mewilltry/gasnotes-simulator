@@ -53,12 +53,23 @@ function receiveInvestigation(message) {
 }
 
 function closeInvestigations() {
+    pendingResourceShow = false;
     try {
         if (resourcesModal && resourcesModal.open) resourcesModal.close();
     } catch (e) {
         console.error("Investigations: failed to close resources modal", e);
     }
 }
+
+// while the monitor is in standby, images are inserted but not shown;
+// switching the monitor on reveals the most recent one
+let pendingResourceShow = false;
+window.addEventListener("monitor-power-on", () => {
+    if (pendingResourceShow && resourcesModal) {
+        pendingResourceShow = false;
+        resourcesModal.showModal();
+    }
+});
 
 let resourcesModal = document.querySelector("#resources");
 let postListElement = document.querySelector("#resource-list");
@@ -85,9 +96,14 @@ function insertInvestigation(type, data, name, icon) {
     // add sim-post to list
     postListElement.insertAdjacentElement("afterbegin", post);
 
-    // show
-    resourcesModal.showModal();
+    // render into the marquee, but only pop the overlay if the monitor is
+    // powered on — otherwise queue it for power-on
     postListElement.querySelector("label").click();
+    if (document.body.dataset.monitorPower === "off") {
+        pendingResourceShow = true;
+    } else {
+        resourcesModal.showModal();
+    }
 }
 
 function countOfType(t) {

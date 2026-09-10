@@ -255,8 +255,10 @@ export function audioIsRunning() {
         window.simAudioControlObjects.audioContext.state === "running";
     let soundSwitchEnabled =
         document.getElementById("sound-switch")?.checked == true;
+    // a monitor in standby is silent
+    let monitorIsOn = document.body.dataset.monitorPower !== "off";
 
-    if (audioContextEnabled && soundSwitchEnabled) {
+    if (audioContextEnabled && soundSwitchEnabled && monitorIsOn) {
         return true;
     }
 

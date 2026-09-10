@@ -4,6 +4,9 @@ import "./custom_elements/sim-post.js";
 import "./custom_elements/sim-ix-bsl.js";
 import "./custom_elements/sim-ix-radiograph.js";
 
+// MONITOR POWER (starts in standby)
+import "./monitor-power.js";
+
 // SOCKETS
 import { getSocket } from "./sockets.js";
 
