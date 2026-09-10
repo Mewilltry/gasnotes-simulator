@@ -220,14 +220,15 @@ function initDefib() {
         g.gain.value = 0;
         osc.connect(g).connect(bus());
         const t0 = ctx.currentTime;
-        osc.frequency.setValueAtTime(180, t0);
+        // rising whine that ends on the "ready" pitch so the two blend
+        osc.frequency.setValueAtTime(220, t0);
         osc.frequency.exponentialRampToValueAtTime(
-            1600,
+            2000,
             t0 + Math.max(0.2, durMs / 1000),
         );
-        g.gain.linearRampToValueAtTime(0.16, t0 + 0.05);
+        g.gain.linearRampToValueAtTime(0.42, t0 + 0.06);
         osc.start(t0);
-        chargeSound = { osc, g };
+        chargeSound = { oscs: [osc], g };
     }
     function stopChargeSound() {
         if (!chargeSound) return;
@@ -236,31 +237,59 @@ function initDefib() {
             chargeSound.g.gain.cancelScheduledValues(t);
             chargeSound.g.gain.setValueAtTime(chargeSound.g.gain.value, t);
             chargeSound.g.gain.linearRampToValueAtTime(0, t + 0.05);
-            chargeSound.osc.stop(t + 0.07);
+            chargeSound.oscs.forEach((o) => o.stop(t + 0.07));
         } catch (e) {}
         chargeSound = null;
     }
 
+    // Sustained "charge ready / push shock" alarm: a loud, steady ~2 kHz
+    // tone with a bright octave on top, held until shock/disarm/timeout.
     function startReadySound() {
         stopReadySound();
         if (!audioIsRunning()) return;
         const ctx = actx();
         if (!ctx || !bus()) return;
-        const osc = ctx.createOscillator();
-        osc.type = "square";
-        osc.frequency.value = 2000;
+        const t0 = ctx.currentTime;
+
         const g = ctx.createGain();
-        g.gain.value = 0.05;
-        osc.connect(g).connect(bus());
-        osc.start();
-        readySound = { osc, g };
+        g.gain.setValueAtTime(0, t0);
+        g.gain.linearRampToValueAtTime(0.6, t0 + 0.015);
+        g.connect(bus());
+
+        const body = ctx.createOscillator();
+        body.type = "sine";
+        body.frequency.value = 2000;
+        const bodyGain = ctx.createGain();
+        bodyGain.gain.value = 0.75;
+        body.connect(bodyGain).connect(g);
+
+        const edge = ctx.createOscillator();
+        edge.type = "sawtooth";
+        edge.frequency.value = 2000;
+        const edgeGain = ctx.createGain();
+        edgeGain.gain.value = 0.3;
+        edge.connect(edgeGain).connect(g);
+
+        const shimmer = ctx.createOscillator();
+        shimmer.type = "sine";
+        shimmer.frequency.value = 4000;
+        const shimmerGain = ctx.createGain();
+        shimmerGain.gain.value = 0.12;
+        shimmer.connect(shimmerGain).connect(g);
+
+        body.start(t0);
+        edge.start(t0);
+        shimmer.start(t0);
+        readySound = { oscs: [body, edge, shimmer], g };
     }
     function stopReadySound() {
         if (!readySound) return;
         try {
             const t = actx().currentTime;
-            readySound.g.gain.linearRampToValueAtTime(0, t + 0.03);
-            readySound.osc.stop(t + 0.05);
+            readySound.g.gain.cancelScheduledValues(t);
+            readySound.g.gain.setValueAtTime(readySound.g.gain.value, t);
+            readySound.g.gain.linearRampToValueAtTime(0, t + 0.04);
+            readySound.oscs.forEach((o) => o.stop(t + 0.06));
         } catch (e) {}
         readySound = null;
     }
@@ -272,14 +301,14 @@ function initDefib() {
         const t0 = ctx.currentTime;
         const osc = ctx.createOscillator();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(140, t0);
-        osc.frequency.exponentialRampToValueAtTime(40, t0 + 0.18);
+        osc.frequency.setValueAtTime(150, t0);
+        osc.frequency.exponentialRampToValueAtTime(38, t0 + 0.2);
         const g = ctx.createGain();
-        g.gain.setValueAtTime(0.5, t0);
-        g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.25);
+        g.gain.setValueAtTime(0.7, t0);
+        g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.28);
         osc.connect(g).connect(bus());
         osc.start(t0);
-        osc.stop(t0 + 0.3);
+        osc.stop(t0 + 0.32);
     }
 
     // --- wiring ---
