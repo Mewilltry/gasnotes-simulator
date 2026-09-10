@@ -18,6 +18,9 @@
     --color-purple: rgb(215, 64, 245);
     --color-pink: rgb(226 50 141);
     --color-white: rgb(255, 255, 255);
+    /* match the monitor's LIFEPAK tab colours */
+    --color-orange: rgb(226, 130, 60);
+    --color-grey: rgb(139, 146, 153);
 
     /* Links */
     --linkcolour: #2980b9;
@@ -548,6 +551,16 @@ a:has(> .button) {
 .purple {
     color: var(--color-purple);
     --button-color: var(--color-purple);
+}
+
+.orange {
+    color: var(--color-orange);
+    --button-color: var(--color-orange);
+}
+
+.grey {
+    color: var(--color-grey);
+    --button-color: var(--color-grey);
 }
 
 .white {

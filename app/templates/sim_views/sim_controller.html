@@ -384,14 +384,14 @@ page]) #}
                     type="checkbox"
                     role="switch"
                     data-sim-input="enabler_for_nibp:checked"
-                    class="sim-input-group-switch purple"
+                    class="sim-input-group-switch grey"
                     sim-sync
                 />
             </header>
 
             <div class="sim-input-group-main">
                 <sim-mapgroup>
-                    <sim-slider data-display-name="SBP" class="purple">
+                    <sim-slider data-display-name="SBP" class="grey">
                         <input
                             type="range"
                             data-sim-sbp
@@ -401,7 +401,7 @@ page]) #}
                             sim-sync
                         />
                     </sim-slider>
-                    <sim-slider data-display-name="DBP" class="purple">
+                    <sim-slider data-display-name="DBP" class="grey">
                         <input
                             type="range"
                             data-sim-dbp
@@ -411,7 +411,7 @@ page]) #}
                             sim-sync
                         />
                     </sim-slider>
-                    <sim-slider data-display-name="MAP" class="purple">
+                    <sim-slider data-display-name="MAP" class="grey">
                         <input
                             type="range"
                             data-sim-map
@@ -446,7 +446,7 @@ page]) #}
                         </div>
                     </sim-radiogroup>
                     <button
-                        class="button purple"
+                        class="button grey"
                         sim-nibp-cycle-button
                         data-testid="controller-nibp-run-now"
                     >
@@ -531,12 +531,12 @@ page]) #}
                     type="checkbox"
                     role="switch"
                     data-sim-input="enabler_for_capno:checked"
-                    class="sim-input-group-switch yellow"
+                    class="sim-input-group-switch orange"
                     sim-sync
                 />
             </header>
             <div class="sim-input-group-main">
-                <sim-slider data-display-name="RR" class="yellow">
+                <sim-slider data-display-name="RR" class="orange">
                     <input
                         type="range"
                         data-sim-input="respiratory_rate:value"
@@ -546,7 +546,7 @@ page]) #}
                         max="60"
                     />
                 </sim-slider>
-                <sim-slider data-display-name="etCO<sub>2</sub>" class="yellow">
+                <sim-slider data-display-name="etCO<sub>2</sub>" class="orange">
                     <input
                         type="range"
                         data-sim-input="etco2:value"
@@ -555,7 +555,7 @@ page]) #}
                         max="90"
                     />
                 </sim-slider>
-                <div class="sim-select yellow" id="capno-picker">
+                <div class="sim-select orange" id="capno-picker">
                     <div class="input-label">CAP</div>
                     <select
                         name=""
@@ -620,12 +620,12 @@ page]) #}
                     type="checkbox"
                     role="switch"
                     data-sim-input="enabler_for_capno:checked"
-                    class="sim-input-group-switch yellow"
+                    class="sim-input-group-switch orange"
                     sim-sync
                 />
             </header>
             <div class="sim-input-group-main">
-                <div class="sim-select yellow">
+                <div class="sim-select orange">
                     <div class="input-label">CAP</div>
                     }
                     <select data-sim-input="arrest_capno_morphology:value">
@@ -636,7 +636,7 @@ page]) #}
                         {% endfor %}
                     </select>
                 </div>
-                <sim-slider data-display-name="etCO<sub>2</sub>" class="yellow">
+                <sim-slider data-display-name="etCO<sub>2</sub>" class="orange">
                     <input
                         type="range"
                         data-sim-input="arrest_etco2:value"
@@ -674,7 +674,7 @@ page]) #}
                         type="checkbox"
                         role="switch"
                         data-sim-input="enabler_for_nibp:checked"
-                        class="purple"
+                        class="grey"
                         sim-sync
                     />
                 </label>
@@ -698,12 +698,16 @@ page]) #}
         >
             <header>
                 <p>Alarm Limits 🚨</p>
-                {# <input
+                {# local show/hide only — not synced to the sim, and
+                   stops the input event so it doesn't dirty the Send button #}
+                <input
                     type="checkbox"
                     role="switch"
-                    data-sim-input="enabler_for_custom_limits:checked"
-                    class="sim-input-group-switch yellow"
-                /> #}
+                    class="sim-input-group-switch red"
+                    aria-label="Show alarm limits"
+                    oninput="event.stopPropagation()"
+                    checked
+                />
             </header>
             <div class="sim-input-group-main" id="limits">
                 <div class="limit-grid">
