@@ -7,8 +7,9 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
-RUN npm ci && npm install --no-save esbuild \
- && ls -l /simulator/node_modules/.bin/esbuild
+RUN npm ci || true
+RUN npm install -g esbuild@0.25.0 \
+ && ln -sf "$(which esbuild)" /simulator/node_modules/.bin/esbuild
 
 COPY uv.lock pyproject.toml .python-version .
 RUN uv sync --frozen
