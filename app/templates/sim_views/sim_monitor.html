@@ -147,9 +147,12 @@
 
         #sim-monitor {
             flex-grow: 1;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
             display: grid;
             grid-template-rows:
-                1.7fr 1.35fr 1.35fr 1.35fr minmax(88px, 1.1fr);
+                1.2fr 1fr 1fr 1fr 0.85fr;
             gap: 0;
             padding: 0;
             background: #000;
@@ -212,23 +215,24 @@
         #sim-monitor sim-trace {
             width: 100%;
             position: absolute;
+            top: 0;
             transform-origin: top;
-            transform: scaleY(0.75);
+            transform: scaleY(0.5);
         }
 
         @media only screen and (min-height: 800px) {
             #sim-monitor sim-trace {
-                transform: scaleY(1) !important;
+                transform: scaleY(0.65) !important;
             }
         }
         @media only screen and (min-height: 1000px) {
             #sim-monitor sim-trace {
-                transform: scaleY(1.25) !important;
+                transform: scaleY(0.8) !important;
             }
         }
         @media only screen and (min-height: 1200px) {
             #sim-monitor sim-trace {
-                transform: scaleY(1.5) !important;
+                transform: scaleY(0.95) !important;
             }
         }
 
@@ -249,7 +253,7 @@
 
         #sim-monitor sim-readout {
             color: #fff;
-            font-size: clamp(2rem, 7.2vh, 4.4rem);
+            font-size: clamp(1.6rem, 5.4vh, 3.2rem);
         }
 
         #sim-monitor .lp-sub sim-readout {
@@ -648,6 +652,7 @@
                     <sim-trace
                         height="200"
                         id="ecg"
+                        y-scale="0.7"
                         data-sim-parameters="ecg_morphology:morphology heart_rate:rate enabler_for_ecg:data-sim-enabled"
                         stroke-colour="rgb(74, 168, 78)"
                     ></sim-trace>
