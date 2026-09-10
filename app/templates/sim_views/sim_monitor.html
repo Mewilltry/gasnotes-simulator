@@ -139,56 +139,96 @@
             }
         }
 
-        /* MONITOR */
+        /* ==========================================================
+           MONITOR — defibrillator-style skin
+           Structure: each parameter is a row of
+           [coloured tab] [white numerics] [waveform lane]
+           ========================================================== */
 
         #sim-monitor {
             flex-grow: 1;
-            /* takes up full height, since its container is a flex column with only one member */
             display: grid;
-            grid-template-columns: 1fr clamp(15rem, 25vh, 18rem);
-            grid-template-rows: repeat(auto-fill, 1fr);
-            gap: 1rem;
-            padding: 1rem;
+            grid-template-rows:
+                1.7fr 1.35fr 1.35fr 1.35fr minmax(88px, 1.1fr);
+            gap: 0;
+            padding: 0;
+            background: #000;
             font-family:
                 Bahnschrift, "DIN Alternate", "Franklin Gothic Medium",
                 "Nimbus Sans Narrow", sans-serif-condensed, sans-serif;
+        }
 
-            & > * {
-                position: relative;
-                /* needed to position the sim-trace elements absolutely */
+        .lp-block {
+            display: grid;
+            grid-template-columns: 30px clamp(100px, 15vw, 150px) 1fr;
+            min-height: 0;
+            overflow: hidden;
+            background: #000;
+            border-top: 1px solid #17191c;
+        }
+        .lp-block:first-child {
+            border-top: 0;
+        }
+
+        .lp-tab {
+            background: var(--tab);
+            color: #0d0f11;
+            font-size: 0.65rem;
+            line-height: 1.15;
+            text-align: center;
+            padding: 4px 2px;
+            overflow: hidden;
+        }
+        .lp-tab b {
+            display: block;
+            font-weight: 700;
+            font-size: 0.72rem;
+        }
+
+        .lp-nums {
+            padding: 2px 6px 4px 10px;
+            min-width: 0;
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .lp-waves {
+            position: relative;
+            min-width: 0;
+            min-height: 0;
+            overflow: hidden;
+        }
+        .lp-lane {
+            position: relative;
+            height: 100%;
+            max-width: 100%;
+        }
+
+        /* sim-trace keeps its original positioning contract:
+           left: ??px is set dynamically in wavemaker2.js */
+        #sim-monitor sim-trace {
+            width: 100%;
+            position: absolute;
+            transform-origin: top;
+            transform: scaleY(0.75);
+        }
+
+        @media only screen and (min-height: 800px) {
+            #sim-monitor sim-trace {
+                transform: scaleY(1) !important;
             }
-
-            & div:has(> sim-trace) {
-                max-width: 100%;
+        }
+        @media only screen and (min-height: 1000px) {
+            #sim-monitor sim-trace {
+                transform: scaleY(1.25) !important;
             }
-
-            & sim-trace {
-                width: 100%;
-
-                /* left: ??px is set dynamically in wavemaker2.js */
-                position: absolute;
-
-                /* transform: scaleY varies according to height (see below media queries) */
-                transform-origin: top;
-                transform: scaleY(0.75);
-            }
-
-            @media only screen and (min-height: 800px) {
-                sim-trace {
-                    transform: scaleY(1) !important;
-                }
-            }
-
-            @media only screen and (min-height: 1000px) {
-                sim-trace {
-                    transform: scaleY(1.25) !important;
-                }
-            }
-
-            @media only screen and (min-height: 1200px) {
-                sim-trace {
-                    transform: scaleY(1.5) !important;
-                }
+        }
+        @media only screen and (min-height: 1200px) {
+            #sim-monitor sim-trace {
+                transform: scaleY(1.5) !important;
             }
         }
 
@@ -197,45 +237,69 @@
                 padding-bottom: 0;
             }
         }
+
+        /* numerics: white on black, colour lives in the tabs */
         sim-readout {
             &:not([hidden]) {
-                /* get rid of excessive padding seen on inline elements, makes the alarm background look neat */
                 display: inline-block;
                 padding: 0.1em;
             }
-
-            font-size: clamp(3rem, calc(18vh - 5rem), 10rem);
             line-height: 0.9;
         }
 
-        /* alarm styling */
-        /* sim-readout[sim-alarm] is toggled true and false in JS */
-        /* body[sim-alarm-bright] is toggled on and off in JS */
-        /* not using a CSS animation because the flashes should be synchronous between readouts */
-        body[sim-alarm-bright="true"] sim-readout[sim-alarm="on"] {
-            background-color: currentColor;
+        #sim-monitor sim-readout {
+            color: #fff;
+            font-size: clamp(2rem, 7.2vh, 4.4rem);
+        }
+
+        #sim-monitor .lp-sub sim-readout {
+            font-size: clamp(0.9rem, 2.2vh, 1.35rem);
+        }
+
+        #sim-monitor .lp-sub {
+            font-size: clamp(0.75rem, 1.6vh, 1rem);
+            color: #9aa1a8;
+            margin-top: 3px;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        /* alarm styling — original mechanism kept, colours corrected
+           for white numerics (currentColor would be invisible) */
+        body[sim-alarm-bright="true"] #sim-monitor sim-readout[sim-alarm="on"] {
+            background-color: #ff2d2d;
 
             span {
-                color: white;
-            }
-
-            &.white {
-                span {
-                    color: black;
-                }
+                color: #fff;
             }
         }
 
         .readout-label {
-            font-size: 1rem;
+            font-size: 0.8rem;
+            color: #9aa1a8;
             margin: 0;
         }
 
+        #bp-readout .lp-nums,
+        #nibp .lp-nums {
+            justify-content: center;
+        }
+
         #bp-readout sim-readout {
-            font-size: clamp(3rem, calc(10vh - 2.5rem), 5rem) !important;
+            font-size: clamp(1.4rem, 3.4vh, 2.2rem) !important;
         }
         #nibp sim-readout {
-            font-size: clamp(3rem, calc(18vh - 5rem), min(10rem, 12vw));
+            font-size: clamp(1.6rem, 4.2vh, 2.8rem);
+        }
+
+        #nibp-tools {
+            display: flex;
+            align-items: center;
+            gap: clamp(8px, 2vw, 20px);
+            padding: 6px 12px;
+            min-width: 0;
+            overflow: hidden;
         }
 
         #nibp-timer-widget {
@@ -501,24 +565,31 @@
             }
         }
 
-        /* phone screens */
+        /* phone screens: drop the traces, keep the numbers readable */
         @media (max-height: 700px), (max-width: 600px) {
             #sim-monitor {
-                grid-template-columns: repeat(2, 1fr) !important;
-                grid-template-rows: repeat(auto-fill, 1fr) !important;
-
-                & div:has(> sim-trace) {
-                    display: none;
-                }
+                grid-template-rows: repeat(5, 1fr) !important;
             }
 
-            sim-readout {
-                font-size: clamp(1rem, 10vh, 4rem) !important;
+            .lp-block {
+                grid-template-columns: 24px 1fr !important;
+            }
+
+            .lp-waves {
+                display: none;
+            }
+
+            #sim-monitor sim-readout {
+                font-size: clamp(1.5rem, 9vh, 3rem) !important;
             }
 
             #bp-readout sim-readout,
             #nibp sim-readout {
-                font-size: clamp(1rem, 5vh, 4rem) !important;
+                font-size: clamp(1rem, 5vh, 2rem) !important;
+            }
+
+            #nibp-tools {
+                display: none;
             }
         }
 
@@ -558,171 +629,201 @@
     </style>
 
     <div id="sim-monitor">
-        <div>
-            <sim-trace
-                height="200"
-                id="ecg"
-                data-sim-parameters="ecg_morphology:morphology heart_rate:rate enabler_for_ecg:data-sim-enabled"
-                stroke-colour="rgb(76, 209, 55)"
-            ></sim-trace>
-        </div>
-        <div>
-            <p class="readout-label">HR (/min)</p>
-            <sim-readout
-                id="heart-rate"
-                class="green"
-                data-testid="monitor-readout-heart-rate"
-                {# enabling/disabling handled in a special case elsewhere, needs complex logic #}
-                data-sim-parameters="heart_rate limit_lower_hr:data-sim-limit-low limit_upper_hr:data-sim-limit-high"
-                data-sim-wobble-min="0"
-                data-sim-wobble="3"
-            ></sim-readout>
-        </div>
-        <div>
-            <sim-trace
-                height="200"
-                id="spo2"
-                data-sim-parameters="spo2_morphology:morphology enabler_for_spo2:data-sim-enabled"
-                mode="copycat"
-                pacemaker="ecg"
-                stroke-colour="rgb(0, 168, 255)"
-            ></sim-trace>
-        </div>
-        <div>
-            <p class="readout-label">SpO<sub>2</sub> (%)</p>
-            <sim-readout
-                id="readout-spo2"
-                class="blue"
-                data-testid="monitor-readout-spo2"
-                data-sim-parameters="spo2 enabler_for_spo2:data-sim-enabled limit_lower_spo2:data-sim-limit-low limit_upper_spo2:data-sim-limit-high"
-                data-sim-wobble="2"
-                data-sim-wobble-max="100"
-                data-sim-wobble-min="0"
-            ></sim-readout>
-        </div>
-        <div>
-            <sim-trace
-                height="200"
-                mode="copycat"
-                pacemaker="ecg"
-                stroke-colour="rgb(232, 65, 24)"
-                data-sim-parameters="artline_morphology:morphology enabler_for_art:data-sim-enabled"
-            ></sim-trace>
-        </div>
-        <div id="bp-readout">
-            <p class="readout-label">ART (mmHg)</p>
-            <div class="flex wrap">
+        <!-- ECG / HR -->
+        <div class="lp-block" id="hr-block" style="--tab: rgb(74, 168, 78)">
+            <div class="lp-tab"><b>HR</b>bpm</div>
+            <div class="lp-nums">
                 <sim-readout
-                    class="red"
-                    data-sim-suffix=" / "
-                    data-sim-parameters="sbp_invasive enabler_for_art:data-sim-enabled limit_lower_sbp_invasive:data-sim-limit-low limit_upper_sbp_invasive:data-sim-limit-high"
-                ></sim-readout>
-                <sim-readout
-                    class="red"
-                    data-sim-parameters="dbp_invasive enabler_for_art:data-sim-enabled limit_lower_dbp_invasive:data-sim-limit-low limit_upper_dbp_invasive:data-sim-limit-high"
+                    id="heart-rate"
+                    class="green"
+                    data-testid="monitor-readout-heart-rate"
+                    {# enabling/disabling handled in a special case elsewhere, needs complex logic #}
+                    data-sim-parameters="heart_rate limit_lower_hr:data-sim-limit-low limit_upper_hr:data-sim-limit-high"
+                    data-sim-wobble-min="0"
+                    data-sim-wobble="3"
                 ></sim-readout>
             </div>
-            <sim-readout
-                data-sim-prefix="("
-                data-sim-suffix=")"
-                class="red"
-                data-sim-parameters="map_invasive enabler_for_art:data-sim-enabled limit_lower_map_invasive:data-sim-limit-low limit_upper_map_invasive:data-sim-limit-high"
-            ></sim-readout>
+            <div class="lp-waves">
+                <div class="lp-lane">
+                    <sim-trace
+                        height="200"
+                        id="ecg"
+                        data-sim-parameters="ecg_morphology:morphology heart_rate:rate enabler_for_ecg:data-sim-enabled"
+                        stroke-colour="rgb(74, 168, 78)"
+                    ></sim-trace>
+                </div>
+            </div>
         </div>
-        <div>
-            <sim-trace
-                id="capno"
-                height="200"
-                fill-opacity="0.15"
-                fill-colour="rgb(251, 197, 49)"
-                stroke-colour="rgb(251, 197, 49)"
-                data-sim-parameters="capno_morphology:morphology respiratory_rate:rate etco2:data-scalar enabler_for_capno:data-sim-enabled"
-                x-rate="60"
-                y-scale="1"
-                data-scale-min="0.05"
-                data-scale-max="1.5"
-                data-scale-m="0.025"
-                data-scale-c="0"
-            ></sim-trace>
+
+        <!-- Capnograph / etCO2 + RR -->
+        <div class="lp-block" id="etco2" style="--tab: rgb(226, 130, 60)">
+            <div class="lp-tab"><b>EtCO₂</b>mmHg</div>
+            <div class="lp-nums">
+                <sim-readout
+                    class="yellow"
+                    data-sim-parameters="etco2 enabler_for_capno:data-sim-enabled limit_lower_etco2:data-sim-limit-low limit_upper_etco2:data-sim-limit-high"
+                    sim-transitionable="true"
+                    data-sim-wobble="2"
+                    data-sim-wobble-min="0"
+                ></sim-readout>
+                <div class="lp-sub">
+                    <span>RR (<span id="rr-source"></span>)</span>
+                    <sim-readout
+                        id="rr-readout"
+                        class="white"
+                        data-sim-parameters="respiratory_rate limit_lower_rr:data-sim-limit-low limit_upper_rr:data-sim-limit-high"
+                        sim-transitionable="true"
+                        data-sim-wobble="1"
+                        data-sim-wobble-min="0"
+                    ></sim-readout>
+                </div>
+            </div>
+            <div class="lp-waves">
+                <div class="lp-lane">
+                    <sim-trace
+                        id="capno"
+                        height="200"
+                        fill-opacity="0.15"
+                        fill-colour="rgb(226, 130, 60)"
+                        stroke-colour="rgb(226, 130, 60)"
+                        data-sim-parameters="capno_morphology:morphology respiratory_rate:rate etco2:data-scalar enabler_for_capno:data-sim-enabled"
+                        x-rate="60"
+                        y-scale="1"
+                        data-scale-min="0.05"
+                        data-scale-max="1.5"
+                        data-scale-m="0.025"
+                        data-scale-c="0"
+                    ></sim-trace>
+                </div>
+            </div>
         </div>
-        <div id="etco2">
-            <p class="readout-label">etCO<sub>2</sub> (mmHg)</p>
-            <sim-readout
-                class="yellow"
-                data-sim-parameters="etco2 enabler_for_capno:data-sim-enabled limit_lower_etco2:data-sim-limit-low limit_upper_etco2:data-sim-limit-high"
-                sim-transitionable="true"
-                data-sim-wobble="2"
-                data-sim-wobble-min="0"
-            ></sim-readout>
+
+        <!-- Pleth / SpO2 -->
+        <div class="lp-block" id="spo2-block" style="--tab: rgb(109, 157, 201)">
+            <div class="lp-tab"><b>SpO₂</b>%</div>
+            <div class="lp-nums">
+                <sim-readout
+                    id="readout-spo2"
+                    class="blue"
+                    data-testid="monitor-readout-spo2"
+                    data-sim-parameters="spo2 enabler_for_spo2:data-sim-enabled limit_lower_spo2:data-sim-limit-low limit_upper_spo2:data-sim-limit-high"
+                    data-sim-wobble="2"
+                    data-sim-wobble-max="100"
+                    data-sim-wobble-min="0"
+                ></sim-readout>
+            </div>
+            <div class="lp-waves">
+                <div class="lp-lane">
+                    <sim-trace
+                        height="200"
+                        id="spo2"
+                        data-sim-parameters="spo2_morphology:morphology enabler_for_spo2:data-sim-enabled"
+                        mode="copycat"
+                        pacemaker="ecg"
+                        stroke-colour="rgb(109, 157, 201)"
+                    ></sim-trace>
+                </div>
+            </div>
         </div>
+
+        <!-- Arterial line -->
+        <div class="lp-block" id="bp-readout" style="--tab: rgb(255, 59, 59)">
+            <div class="lp-tab"><b>ART</b>mmHg</div>
+            <div class="lp-nums">
+                <div class="flex wrap">
+                    <sim-readout
+                        class="red"
+                        data-sim-suffix=" / "
+                        data-sim-parameters="sbp_invasive enabler_for_art:data-sim-enabled limit_lower_sbp_invasive:data-sim-limit-low limit_upper_sbp_invasive:data-sim-limit-high"
+                    ></sim-readout>
+                    <sim-readout
+                        class="red"
+                        data-sim-parameters="dbp_invasive enabler_for_art:data-sim-enabled limit_lower_dbp_invasive:data-sim-limit-low limit_upper_dbp_invasive:data-sim-limit-high"
+                    ></sim-readout>
+                </div>
+                <sim-readout
+                    data-sim-prefix="("
+                    data-sim-suffix=")"
+                    class="red"
+                    data-sim-parameters="map_invasive enabler_for_art:data-sim-enabled limit_lower_map_invasive:data-sim-limit-low limit_upper_map_invasive:data-sim-limit-high"
+                ></sim-readout>
+            </div>
+            <div class="lp-waves">
+                <div class="lp-lane">
+                    <sim-trace
+                        height="200"
+                        mode="copycat"
+                        pacemaker="ecg"
+                        stroke-colour="rgb(255, 59, 59)"
+                        data-sim-parameters="artline_morphology:morphology enabler_for_art:data-sim-enabled"
+                    ></sim-trace>
+                </div>
+            </div>
+        </div>
+
         <audio
             id="nibp-audio"
             src="{{ url_for('static', filename='audio/nibp.mp3') }}"
             preload="auto"
         ></audio>
-        <div id="nibp">
-            <p class="readout-label">
-                NIBP (mmHg)
-                <span
-                    id="nibp-timer-widget"
-                    data-testid="readout-nibp-timer"
-                    data-sim-enabled="true"
-                    >Auto 02:00</span
-                >
-            </p>
-            <!-- slow-updating -->
-            <div class="flex wrap">
+
+        <!-- NIBP -->
+        <div class="lp-block" id="nibp" style="--tab: rgb(139, 146, 153)">
+            <div class="lp-tab"><b>NIBP</b>mmHg</div>
+            <div class="lp-nums">
+                <!-- slow-updating -->
+                <div class="flex wrap">
+                    <sim-readout
+                        class="purple"
+                        data-testid="readout-nibp-sbp-delayed"
+                        data-sim-delayed-datasource="sbp_noninvasive"
+                        data-sim-parameters="enabler_for_nibp:data-sim-enabled limit_lower_sbp_noninvasive:data-sim-limit-low limit_upper_sbp_noninvasive:data-sim-limit-high"
+                    ></sim-readout>
+                    <sim-readout
+                        class="purple"
+                        data-sim-prefix=" / "
+                        data-testid="readout-nibp-dbp-delayed"
+                        data-sim-delayed-datasource="dbp_noninvasive"
+                        data-sim-parameters="enabler_for_nibp:data-sim-enabled limit_lower_dbp_noninvasive:data-sim-limit-low limit_upper_dbp_noninvasive:data-sim-limit-high"
+                    ></sim-readout>
+                    <sim-readout
+                        class="purple"
+                        data-sim-prefix="("
+                        data-sim-suffix=")"
+                        data-sim-delayed-datasource="map_noninvasive"
+                        data-sim-parameters="enabler_for_nibp:data-sim-enabled limit_lower_map_noninvasive:data-sim-limit-low limit_upper_map_noninvasive:data-sim-limit-high"
+                    ></sim-readout>
+                </div>
+                <!-- live-updating -->
                 <sim-readout
                     class="purple"
-                    data-testid="readout-nibp-sbp-delayed"
-                    data-sim-delayed-datasource="sbp_noninvasive"
-                    data-sim-parameters="enabler_for_nibp:data-sim-enabled limit_lower_sbp_noninvasive:data-sim-limit-low limit_upper_sbp_noninvasive:data-sim-limit-high"
+                    data-sim-parameters="sbp_noninvasive"
+                    hidden
                 ></sim-readout>
                 <sim-readout
+                    data-sim-prefix=" / "
+                    data-sim-parameters="dbp_noninvasive"
                     class="purple"
-                    data-sim-prefix=" / "
-                    data-testid="readout-nibp-dbp-delayed"
-                    data-sim-delayed-datasource="dbp_noninvasive"
-                    data-sim-parameters="enabler_for_nibp:data-sim-enabled limit_lower_dbp_noninvasive:data-sim-limit-low limit_upper_dbp_noninvasive:data-sim-limit-high"
+                    hidden
                 ></sim-readout>
                 <sim-readout
-                    class="purple"
                     data-sim-prefix="("
                     data-sim-suffix=")"
-                    data-sim-delayed-datasource="map_noninvasive"
-                    data-sim-parameters="enabler_for_nibp:data-sim-enabled limit_lower_map_noninvasive:data-sim-limit-low limit_upper_map_noninvasive:data-sim-limit-high"
+                    data-sim-parameters="map_noninvasive"
+                    class="purple"
+                    hidden
                 ></sim-readout>
             </div>
-            <!-- live-updating -->
-            <sim-readout
-                class="purple"
-                data-sim-parameters="sbp_noninvasive"
-                hidden
-            ></sim-readout>
-            <sim-readout
-                data-sim-prefix=" / "
-                data-sim-parameters="dbp_noninvasive"
-                class="purple"
-                hidden
-            ></sim-readout>
-            <sim-readout
-                data-sim-prefix="("
-                data-sim-suffix=")"
-                data-sim-parameters="map_noninvasive"
-                class="purple"
-                hidden
-            ></sim-readout>
-        </div>
-        <div>
-            <p class="readout-label">RR (<span id="rr-source"></span>)</p>
-            <sim-readout
-                id="rr-readout"
-                class="white"
-                data-sim-parameters="respiratory_rate limit_lower_rr:data-sim-limit-low limit_upper_rr:data-sim-limit-high"
-                sim-transitionable="true"
-                data-sim-wobble="1"
-                data-sim-wobble-min="0"
-            ></sim-readout>
+            <div id="nibp-tools">
+                <p class="readout-label">
+                    <span
+                        id="nibp-timer-widget"
+                        data-testid="readout-nibp-timer"
+                        data-sim-enabled="true"
+                        >Auto 02:00</span
+                    >
+                </p>
+            </div>
         </div>
     </div>
 
