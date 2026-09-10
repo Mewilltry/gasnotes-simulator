@@ -60,6 +60,19 @@
                 <span class="label">Run NIBP</span>
             </div>
         </div>
+        <label class="cell" id="defib-cell">
+            <div class="cell-icon">
+                <span class="icon"
+                    ><input
+                        type="checkbox"
+                        class="yellow"
+                        role="switch"
+                        style="display: block"
+                        id="defib-toggle"
+                /></span>
+                <span class="label">Defib</span>
+            </div>
+        </label>
         <div class="spacer"></div>
 
         <label class="cell">
@@ -144,6 +157,175 @@
            Structure: each parameter is a row of
            [coloured tab] [white numerics] [waveform lane]
            ========================================================== */
+
+        /* defibrillator mode: a right-hand panel that only displaces the
+           monitor grid while it is switched on */
+        #defib-layout {
+            display: flex;
+            flex: 1 1 auto;
+            min-height: 0;
+            min-width: 0;
+        }
+        #defib-layout > #sim-monitor {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        #defib-panel {
+            display: none;
+        }
+        body:has(#defib-toggle:checked) #defib-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            flex: 0 0 clamp(132px, 19vw, 190px);
+            box-sizing: border-box;
+            padding: 0.6rem 0.5rem;
+            background: #0a0b0d;
+            border-left: 2px solid #1c1f23;
+            overflow-y: auto;
+            color: #e8eaed;
+            font-family:
+                Bahnschrift, "DIN Alternate", "Franklin Gothic Medium",
+                "Nimbus Sans Narrow", sans-serif-condensed, sans-serif;
+        }
+        @media only screen and (max-width: 560px) {
+            body:has(#defib-toggle:checked) #defib-panel {
+                flex-basis: 116px;
+            }
+        }
+
+        #defib-timer {
+            font-size: clamp(1.1rem, 3.4vh, 1.8rem);
+            font-weight: 700;
+            text-align: center;
+            color: #fff;
+            letter-spacing: 0.05em;
+        }
+
+        #defib-energy {
+            display: grid;
+            justify-items: center;
+            gap: 0.15rem;
+            background: #16181c;
+            border-radius: 0.5rem;
+            padding: 0.4rem;
+        }
+        #defib-energy button {
+            appearance: none;
+            border: none;
+            background: #2a2d33;
+            color: #ffd23f;
+            width: 2.6rem;
+            height: 1.5rem;
+            border-radius: 0.35rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        #defib-energy button:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+        #defib-energy-readout {
+            color: #ffd23f;
+            font-weight: 700;
+            line-height: 1;
+        }
+        #defib-energy-value {
+            font-size: clamp(1.6rem, 4.6vh, 2.6rem);
+        }
+        #defib-energy-unit {
+            font-size: 1rem;
+            margin-left: 0.1em;
+        }
+        .defib-cap-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.18em;
+            color: #8b9299;
+        }
+
+        #defib-sync-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.4rem;
+            background: #16181c;
+            border-radius: 0.5rem;
+            padding: 0.4rem 0.5rem;
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            color: #cfd3d7;
+            margin: 0;
+        }
+
+        .defib-btn {
+            appearance: none;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.7rem 0.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            color: #0d0f11;
+        }
+        #defib-charge {
+            background: #f4c020;
+        }
+        #defib-charge:hover {
+            background: #ffd23f;
+        }
+        #defib-shock {
+            background: #e5342a;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+        #defib-shock:hover {
+            background: #ff4438;
+        }
+        #defib-shock:disabled {
+            background: #47494d;
+            color: #9aa1a8;
+            cursor: not-allowed;
+        }
+        #defib-panel[data-defib-state="armed"] #defib-shock {
+            animation: defib-shock-pulse 900ms ease-in-out infinite;
+        }
+        @keyframes defib-shock-pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(229, 52, 42, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 6px rgba(229, 52, 42, 0);
+            }
+        }
+
+        #defib-progress {
+            height: 0.8rem;
+            background: #16181c;
+            border-radius: 0.4rem;
+            overflow: hidden;
+        }
+        #defib-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f4c020, #ff6a2b);
+        }
+
+        #defib-status {
+            font-size: 0.7rem;
+            text-align: center;
+            color: #cfd3d7;
+            text-wrap: balance;
+        }
+        #defib-shock-count {
+            font-size: 0.65rem;
+            text-align: center;
+            color: #8b9299;
+        }
 
         #sim-monitor {
             flex-grow: 1;
@@ -632,6 +814,7 @@
         }
     </style>
 
+    <div id="defib-layout">
     <div id="sim-monitor">
         <!-- ECG / HR -->
         <div class="lp-block" id="hr-block" style="--tab: rgb(74, 168, 78)">
@@ -830,6 +1013,53 @@
                 </p>
             </div>
         </div>
+    </div>
+
+    <aside id="defib-panel" aria-label="Defibrillator controls">
+        <div id="defib-timer">+00:00</div>
+
+        <div id="defib-energy">
+            <button
+                type="button"
+                id="defib-energy-up"
+                aria-label="Increase energy"
+            >
+                ▲
+            </button>
+            <div id="defib-energy-readout">
+                <span id="defib-energy-value">200</span
+                ><span id="defib-energy-unit">J</span>
+            </div>
+            <button
+                type="button"
+                id="defib-energy-down"
+                aria-label="Decrease energy"
+            >
+                ▼
+            </button>
+            <div class="defib-cap-label">ENERGY</div>
+        </div>
+
+        <label id="defib-sync-row">
+            <span id="defib-sync-label">SYNC OFF</span>
+            <input type="checkbox" role="switch" id="defib-sync" />
+        </label>
+
+        <button type="button" id="defib-charge" class="defib-btn">
+            Charge
+        </button>
+
+        <div id="defib-progress" hidden>
+            <div id="defib-progress-bar"></div>
+        </div>
+
+        <button type="button" id="defib-shock" class="defib-btn" disabled>
+            <span class="defib-bolt">⚡</span> Shock
+        </button>
+
+        <div id="defib-status">Disarmed</div>
+        <div id="defib-shock-count"></div>
+    </aside>
     </div>
 
     {% include "components/connection_modal.html" %}

@@ -66,6 +66,9 @@ document.addEventListener(
 // WAVES
 import "./wavemaker2.js";
 
+// DEFIBRILLATOR MODE (monitor-local)
+import "./defib.js";
+
 // pacemakers need to be started manually
 window.addEventListener("load", (e) => {
     setTimeout(() => {
