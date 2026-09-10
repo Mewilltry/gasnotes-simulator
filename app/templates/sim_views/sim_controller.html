@@ -699,14 +699,14 @@ page]) #}
             <header>
                 <p>Alarm Limits 🚨</p>
                 {# local show/hide only — not synced to the sim, and
-                   stops the input event so it doesn't dirty the Send button #}
+                   stops the input event so it doesn't dirty the Send button.
+                   Starts unchecked so the section is collapsed by default. #}
                 <input
                     type="checkbox"
                     role="switch"
                     class="sim-input-group-switch red"
                     aria-label="Show alarm limits"
                     oninput="event.stopPropagation()"
-                    checked
                 />
             </header>
             <div class="sim-input-group-main" id="limits">
