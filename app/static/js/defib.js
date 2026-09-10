@@ -9,7 +9,9 @@ import { audioIsRunning } from "./audio.js";
 const ENERGY_STEPS = [10, 20, 30, 50, 70, 100, 120, 150, 200, 300, 360];
 const CHARGE_MS = 4000; // nominal charge time (scaled a little by energy)
 const READY_TIMEOUT_MS = 60000; // auto-disarm if a charge is left unused
-const FLATLINE_MS = 1500; // ECG blank after a shock
+const FLATLINE_MS = 3000; // ECG blank after a shock (time for the controller
+//                           operator to choose the post-shock rhythm)
+const SYNC_HOLD_MS = 2000; // in SYNC mode the shock button must be held this long
 
 const els = {
     toggle: document.getElementById("defib-toggle"),
@@ -22,6 +24,7 @@ const els = {
     syncLabel: document.getElementById("defib-sync-label"),
     charge: document.getElementById("defib-charge"),
     shock: document.getElementById("defib-shock"),
+    shockText: document.getElementById("defib-shock-text"),
     progressWrap: document.getElementById("defib-progress"),
     progressBar: document.getElementById("defib-progress-bar"),
     status: document.getElementById("defib-status"),
@@ -61,16 +64,25 @@ function initDefib() {
         else if (state === "charging") els.status.textContent = "Charging …";
         else if (state === "armed") {
             els.status.textContent =
-                (els.sync.checked ? "SYNC · " : "") +
+                (els.sync.checked
+                    ? "SYNC · hold to shock · "
+                    : "") +
                 energy() +
                 "J — PUSH SHOCK";
         }
     }
 
+    function renderShockButton() {
+        els.shockText.textContent =
+            state === "armed" && els.sync.checked ? "Hold to Shock" : "Shock";
+    }
+
     function setState(next) {
         state = next;
         els.panel.dataset.defibState = next;
+        cancelShockHold();
         setStatusText();
+        renderShockButton();
         if (next === "idle") {
             els.shock.disabled = true;
             els.charge.textContent = "Charge";
@@ -157,6 +169,32 @@ function initDefib() {
         playShockSound();
         flatlineEcg(FLATLINE_MS);
         disarm();
+    }
+
+    // In SYNC mode the shock button must be held for SYNC_HOLD_MS; a normal
+    // tap does nothing. Without SYNC a tap delivers immediately.
+    let shockHoldTimer = null;
+
+    function cancelShockHold() {
+        clearTimeout(shockHoldTimer);
+        shockHoldTimer = null;
+        delete els.panel.dataset.shockHolding;
+    }
+
+    function beginShockHold() {
+        if (state !== "armed" || !els.sync.checked) return;
+        cancelShockHold();
+        els.panel.dataset.shockHolding = "true";
+        shockHoldTimer = setTimeout(() => {
+            cancelShockHold();
+            deliverShock();
+        }, SYNC_HOLD_MS);
+    }
+
+    function handleShockClick() {
+        if (state !== "armed") return;
+        if (els.sync.checked) return; // SYNC: only the timed hold delivers
+        deliverShock();
     }
 
     // --- ECG flatline (purely a local visual; the renderer's own
@@ -336,7 +374,9 @@ function initDefib() {
 
     els.sync.addEventListener("change", () => {
         els.syncLabel.textContent = els.sync.checked ? "SYNC ON" : "SYNC OFF";
+        cancelShockHold();
         setStatusText();
+        renderShockButton();
     });
 
     els.charge.addEventListener("click", () => {
@@ -344,7 +384,11 @@ function initDefib() {
         else disarm();
     });
 
-    els.shock.addEventListener("click", deliverShock);
+    els.shock.addEventListener("click", handleShockClick);
+    els.shock.addEventListener("pointerdown", beginShockHold);
+    els.shock.addEventListener("pointerup", cancelShockHold);
+    els.shock.addEventListener("pointerleave", cancelShockHold);
+    els.shock.addEventListener("pointercancel", cancelShockHold);
 
     renderEnergy();
     setState("idle");

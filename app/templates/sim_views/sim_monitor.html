@@ -281,9 +281,36 @@
             align-items: center;
             justify-content: center;
             gap: 0.3rem;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: manipulation;
         }
         #defib-shock:hover {
             background: #ff4438;
+        }
+        /* SYNC-mode "hold to shock" fill */
+        #defib-shock::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 100%;
+            background: rgba(255, 255, 255, 0.32);
+        }
+        #defib-panel[data-shock-holding="true"] #defib-shock::before {
+            right: 0;
+            transition: right 2000ms linear;
+        }
+        .defib-shock-label {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
         }
         #defib-shock:disabled {
             background: #47494d;
@@ -1054,7 +1081,10 @@
         </div>
 
         <button type="button" id="defib-shock" class="defib-btn" disabled>
-            <span class="defib-bolt">⚡</span> Shock
+            <span class="defib-shock-label"
+                ><span class="defib-bolt">⚡</span>
+                <span id="defib-shock-text">Shock</span></span
+            >
         </button>
 
         <div id="defib-status">Disarmed</div>
