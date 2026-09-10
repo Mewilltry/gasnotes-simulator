@@ -193,6 +193,19 @@ import "./custom_elements/sim-picker-radiology";
 // import "./custom_elements/sim-picker-abg";
 import "./custom_elements/sim-ix-bsl";
 
+import { sendCloseInvestigation } from "./investigations";
+function attachCloseImageButton() {
+    let btn = document.querySelector("#close-image-button");
+    if (!btn) {
+        console.error(
+            "Investigations: unable to locate '#close-image-button'",
+        );
+        return;
+    }
+    btn.addEventListener("click", () => sendCloseInvestigation());
+}
+window.addEventListener("load", attachCloseImageButton);
+
 // RESET
 import {
     _applyStateToDomFragment,

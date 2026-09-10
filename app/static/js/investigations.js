@@ -12,6 +12,18 @@ export function sendInvestigation(type, data, name, icon) {
     console.log(`Investigations: send data to server:`, message);
 }
 
+// tell the monitor to dismiss whatever investigation it is showing and
+// go back to the vitals
+export function sendCloseInvestigation() {
+    let socket = getSocket();
+    let message = {
+        sim_room_id: document.body.dataset.simRoomId,
+        action: "close",
+    };
+    socket.emit("sim-ix", JSON.stringify(message));
+    console.log(`Investigations: sent close request`);
+}
+
 export function registerInvestigationReceiver(socket) {
     socket.on("sim-ix", (msg) => {
         let message = JSON.parse(msg);
@@ -21,6 +33,12 @@ export function registerInvestigationReceiver(socket) {
 }
 
 function receiveInvestigation(message) {
+    if (message.action === "close") {
+        console.log("Investigations: received close request");
+        closeInvestigations();
+        return;
+    }
+
     let type = message.type;
     let data = message.data;
     let icon = message.icon;
@@ -32,6 +50,14 @@ function receiveInvestigation(message) {
     );
 
     insertInvestigation(type, data, name, icon);
+}
+
+function closeInvestigations() {
+    try {
+        if (resourcesModal && resourcesModal.open) resourcesModal.close();
+    } catch (e) {
+        console.error("Investigations: failed to close resources modal", e);
+    }
 }
 
 let resourcesModal = document.querySelector("#resources");
