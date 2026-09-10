@@ -1,0 +1,18 @@
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim
+WORKDIR /simulator
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends nodejs npm curl \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY uv.lock pyproject.toml .python-version .
+RUN uv sync --frozen
+
+COPY app /simulator/app
+RUN mkdir -p /simulator/sim_rooms
+
+CMD uv run --no-sync gunicorn -b 0.0.0.0:${PORT:-8069} \
+    --worker-class gevent -w 1 app.wsgi:app
