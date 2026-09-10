@@ -1,5 +1,6 @@
 FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim
-WORKDIR /simulator
+ENV SIM_ROOM_STORE=/sim_rooms
+RUN mkdir -p /sim_rooms
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends nodejs npm curl \
