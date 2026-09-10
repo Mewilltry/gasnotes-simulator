@@ -3,10 +3,19 @@
         width: 80%;
         margin: 0 auto;
     }
+
+    #mega-title img {
+        display: block;
+        width: 100%;
+        /* 300px = native width of medskillz_logo.png; never upscale past it */
+        max-width: 300px;
+        height: auto;
+        margin: 0 auto;
+    }
 </style>
 <div id="mega-title">
     <a href="/" class="no-underline">
-        <img src="{{ url_for('static', filename='img/gasnotes_sim_banner.svg') }}" alt="Simulation Monitor">
+        <img src="{{ url_for('static', filename='img/medskillz_logo.png') }}" alt="Simulation Monitor">
     </a>
 
 </div>

@@ -24,6 +24,15 @@
             /* margin: calc(1vw/1rem) auto; */
         }
 
+        #mega-wobble {
+            display: block;
+            width: 100%;
+            /* 300px = native width of medskillz_logo.png; never upscale past it */
+            max-width: 300px;
+            height: auto;
+            margin: 0 auto;
+        }
+
         #mega-new {
             --button-scale: 1.5;
             height: calc(var(--button-height) * var(--button-scale));
@@ -230,9 +239,9 @@
 
     <section class="wrapped" id="top-of-page">
         <img
-            src="{{ url_for('static', filename='img/gasnotes_sim_banner.svg' ) }}"
+            src="{{ url_for('static', filename='img/medskillz_logo.png' ) }}"
             id="mega-wobble"
-            alt="Gas Notes Simulation Monitor: a free tool for medical eduators."
+            alt="MedSkillz Simulation Monitor: a free tool for medical eduators."
         />
     </section>
 
