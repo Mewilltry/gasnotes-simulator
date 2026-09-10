@@ -16,6 +16,8 @@ COPY app /simulator/app
 RUN mkdir -p /simulator/sim_rooms
 
 ENV PYTHONPATH=/simulator
-CMD uv run --no-sync gunicorn --chdir /simulator \
+CMD mkdir -p /sim_rooms && \
+    uv run --no-sync gunicorn --chdir /simulator \
     -b 0.0.0.0:${PORT:-8069} \
     --worker-class gevent -w 1 app.wsgi:app
+
